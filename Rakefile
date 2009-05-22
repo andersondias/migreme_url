@@ -1,16 +1,22 @@
 require 'rake'
-require 'rake/testtask'
+require 'spec/rake/spectask'
 require 'rake/rdoctask'
 
-desc 'Default: run unit tests.'
-task :default => :test
+desc 'Default: run specs.'
+task :default => :spec
 
-desc 'Test the migreme_url plugin.'
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = true
+spec_files = Rake::FileList["spec/**/*_spec.rb"]
+
+Spec::Rake::SpecTask.new do |t|
+  t.spec_files = spec_files
+  t.spec_opts = ["-c"]
+end
+
+desc "Generate code coverage"
+Spec::Rake::SpecTask.new(:coverage) do |t|
+  t.spec_files = spec_files
+  t.rcov = true
+  t.rcov_opts = ['--exclude', 'spec,/var/lib/gems']
 end
 
 desc 'Generate documentation for the migreme_url plugin.'
@@ -21,3 +27,4 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('README')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
+
